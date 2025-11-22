@@ -1,10 +1,10 @@
-#include "functions.h"
+#include "lineTY.h"
 #include <iostream>
 #include <limits>
 
 using namespace std;
 
-//  lineTY – Rule of Three
+//  lineTY ï¿½ Rule of Three
 
 lineTY::lineTY() {
     coeff = new double[3];
