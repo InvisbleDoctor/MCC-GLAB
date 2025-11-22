@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "functions.h"
+#include "lineTY.h"
 
 using namespace std;
 
