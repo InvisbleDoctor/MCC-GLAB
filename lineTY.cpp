@@ -175,7 +175,7 @@ bool lineTY::intersectionPoint(const lineTY& other, double& x, double& y) const 
 
 void WaitForEnter() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cout << "Press Enter To Return\n";
+    cout << "Press Enter To Return to main menu.\n";
     cin.get();
 }
 
@@ -218,28 +218,60 @@ void listLines(const vector<lineTY*>& lines, bool showSlopes) {
     }
 }
 
+int getLoopChoice() {
+    int choice;
+    while (true) {
+        cin >> choice;
+
+        // bad input: letters, symbols, etc.
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Try again. Invalid input\n";
+            continue; // ask again
+        }
+
+        // valid input must be ONLY 0 or -1
+        if (choice == 0 || choice == -1) {
+            return choice;
+        }
+
+        cout << "Try again. Invalid input\n";
+    }
+}
+
+
 void addLine(vector<lineTY*>& lines) {
     double A, B, C;
-    do // loop until valid line entered
-    {
-        cout << "\nEnter coefficients for new line (ax + by = c)\n";
-        cout << "a = ";
-        cin >> A;
-        cout << "b = ";
-        cin >> B;
-        if (A == 0.0 && B == 0.0) {
-            cout << "Invalid line: both a and b cannot be zero. Please re-enter.\n";
-        }
-    } while (A == 0.0 && B == 0.0); 
-    cout << "c = ";
-    cin >> C;
+    int userExit = 0;
+    while (userExit != -1) {
+        do // loop until valid line entered
+        {
+            cout << "\nEnter coefficients for new line (ax + by = c)\n";
+            cout << "a = ";
+            cin >> A;
+            cout << "b = ";
+            cin >> B;
+            if (A == 0.0 && B == 0.0) {
+                cout << "Invalid line: both a and b cannot be zero. Please re-enter.\n";
+            }
+        } while (A == 0.0 && B == 0.0); 
+        cout << "c = ";
+        cin >> C;
         
 
-    lineTY* ptr = new lineTY(A, B, C);
-    lines.push_back(ptr);
+        lineTY* ptr = new lineTY(A, B, C);
+        lines.push_back(ptr);
 
-    cout << "\nAdded line #" << lines.size() << ": "
+        cout << "\nAdded line #" << lines.size() << ": "
         << A << "x + " << B << "y = " << C << "\n";
+    
+    cout << "\nWould you like to add another line? (0 = Yes, -1 = Return to menu): ";
+    userExit = getLoopChoice();
+    if (userExit == 1) continue; // invalid -> retry from start of loop
+    if (userExit == -1) return;
+
+    }
 }
 
 bool chooseIndex(const vector<lineTY*>& lines, int& idx, const char* prompt) {
@@ -256,62 +288,87 @@ bool chooseIndex(const vector<lineTY*>& lines, int& idx, const char* prompt) {
 }
 
 void compareTwoLines(const vector<lineTY*>& lines) {
-    if (lines.size() < 2) {
-        cout << "\nNeed at least 2 lines.\n";
-        return;
+    int userExit = 0;
+    while (userExit != -1) 
+    {
+        if (lines.size() < 2) {
+            cout << "\nNeed at least 2 lines.\n";
+            return;
+        }
+
+        cout << "\nCompare Two Lines\n";
+        listLines(lines, false);
+
+        int i1, i2;
+        if (!chooseIndex(lines, i1, "\nEnter FIRST line number: "))  return;
+        if (!chooseIndex(lines, i2, "Enter SECOND line number: "))   return;
+
+        const lineTY* L1 = lines[i1 - 1]; //Finding the first line in lines vector
+        const lineTY* L2 = lines[i2 - 1]; //Finding the second line in lines vector
+
+        cout << "\nLine #" << i1 << ": "
+            << L1->getA() << "x + " << L1->getB() << "y = " << L1->getC() << "\n";
+        cout << "Line #" << i2 << ": "
+            << L2->getA() << "x + " << L2->getB() << "y = " << L2->getC() << "\n\n";
+
+        cout << "Equal?          " << (L1->isEqual(*L2) ? "YES" : "NO") << "\n";
+        cout << "Parallel?       " << (L1->isParallel(*L2) ? "YES" : "NO") << "\n";
+        cout << "Perpendicular?  " << (L1->isPerpendicular(*L2) ? "YES" : "NO") << "\n";
+
+        cout << "\nWould you like to compare another pair of lines? (0 = Yes, -1 = Return to menu): ";
+        userExit = getLoopChoice();
+        if (userExit == -1) return; // return to menu if user chooses -1
     }
-
-    cout << "\nCompare Two Lines\n";
-    listLines(lines, false);
-
-    int i1, i2;
-    if (!chooseIndex(lines, i1, "\nEnter FIRST line number: "))  return;
-    if (!chooseIndex(lines, i2, "Enter SECOND line number: "))   return;
-
-    const lineTY* L1 = lines[i1 - 1];
-    const lineTY* L2 = lines[i2 - 1];
-
-    cout << "\nLine #" << i1 << ": "
-        << L1->getA() << "x + " << L1->getB() << "y = " << L1->getC() << "\n";
-    cout << "Line #" << i2 << ": "
-        << L2->getA() << "x + " << L2->getB() << "y = " << L2->getC() << "\n\n";
-
-    cout << "Equal?          " << (L1->isEqual(*L2) ? "YES" : "NO") << "\n";
-    cout << "Parallel?       " << (L1->isParallel(*L2) ? "YES" : "NO") << "\n";
-    cout << "Perpendicular?  " << (L1->isPerpendicular(*L2) ? "YES" : "NO") << "\n";
 }
 
 void intersectTwoLines(const vector<lineTY*>& lines) {
-    if (lines.size() < 2) {
-        cout << "\nNeed at least 2 lines.\n";
-        return;
-    }
+    int userExit = 0;
+    while (userExit != -1) 
+    {
+        if (lines.size() < 2) {
+            cout << "\nNeed at least 2 lines.\n";
+            return;
+        }
 
-    cout << "\nIntersection of Two Lines\n";
-    listLines(lines, false);
+        cout << "\nIntersection of Two Lines\n";
+        listLines(lines, false);
 
-    int i1, i2;
-    if (!chooseIndex(lines, i1, "\nEnter FIRST line number: "))  return;
-    if (!chooseIndex(lines, i2, "Enter SECOND line number: "))   return;
+        int i1, i2;
+        if (!chooseIndex(lines, i1, "\nEnter FIRST line number: "))  return;
+        if (!chooseIndex(lines, i2, "Enter SECOND line number: "))   return;
 
-    const lineTY* L1 = lines[i1 - 1];
-    const lineTY* L2 = lines[i2 - 1];
+        const lineTY* L1 = lines[i1 - 1];
+        const lineTY* L2 = lines[i2 - 1];
 
-    if (L1->isEqual(*L2)) {
-        cout << "Lines are equal: Many intersection points.\n";
-        return;
-    }
-    if (L1->isParallel(*L2)) {
-        cout << "Lines are parallel: no intersection point.\n";
-        return;
-    }
+        if (L1->isEqual(*L2)) {
+            cout << "Lines are equal: Many intersection points.\n";
+            cout << "\nWould you like to find the intersection of another pair of lines? (0 = Yes, -1 = Return to menu): ";
+            userExit = getLoopChoice();
+            if (userExit == -1) return;
+        }
+        if (L1->isParallel(*L2)) {
+            cout << "Lines are parallel: no intersection point.\n";
+             cout << "\nWould you like to try and find the intersection of another pair of lines? (0 = Yes, -1 = Return to menu): ";
+            userExit = getLoopChoice();
+            if (userExit == -1) return;
+        }
 
-    double x, y;
-    if (L1->intersectionPoint(*L2, x, y)) {
-        cout << "Intersection at (" << x << ", " << y << ")\n";
-    }
-    else {
-        cout << "No single intersection point.\n";
+        double x, y;
+        if (L1->intersectionPoint(*L2, x, y)) {
+            cout << "Intersection at (" << x << ", " << y << ")\n";
+            cout << "\nWould you like to find the intersection of another pair of lines? (0 = Yes, -1 = Return to menu): ";
+            userExit = getLoopChoice();
+            if (userExit == -1) return;
+        }
+        else {
+            cout << "No single intersection point.\n";
+             cout << "\nWould you like to find the intersection of another pair of lines? (0 = Yes, -1 = Return to menu): ";
+            userExit = getLoopChoice();
+            if (userExit == -1) return;
+        }
+        //cout << "\nWould you like to find the intersection of another pair of lines? (0 = Yes, -1 = Return to menu): ";
+        //userExit = getLoopChoice();
+        //if (userExit == -1) return; //return to menu if user chooses -1
     }
 }
 

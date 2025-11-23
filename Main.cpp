@@ -26,7 +26,7 @@ int main() {
         switch (choice) {
         case 1:
             addLine(lines);
-            WaitForEnter();
+            //WaitForEnter();
             break;
         case 2:
             listLines(lines, true);
@@ -34,11 +34,11 @@ int main() {
             break;
         case 3:
             compareTwoLines(lines);
-            WaitForEnter();
+            //WaitForEnter();
             break;
         case 4:
             intersectTwoLines(lines);
-            WaitForEnter();
+            //WaitForEnter();
             break;
         case 0:
             cout << "Goodbye!\n";
