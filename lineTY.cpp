@@ -15,6 +15,12 @@ lineTY::lineTY() {
 
 lineTY::lineTY(double A, double B, double C) {
     coeff = new double[3];
+    if(B == 0.0 && A == 0.0) { //Checking for degenerate line
+        cout << "Warning: Line is not valid (a=0, b=0). Setting to default line y=0.\n";
+        A = 0.0;
+        B = 1.0;
+        C = 0.0;
+    }
     coeff[0] = A;
     coeff[1] = B;
     coeff[2] = C;
@@ -52,11 +58,15 @@ double lineTY::getC() const { return coeff[2]; }
 
 double lineTY::slope() const {
     double a = coeff[0], b = coeff[1];
-    if (b == 0.0) {
-                    //  slope undefined-treat as vertical
-        return 0.0; //  don't actually use this value if b==0
+    if (a == 0.0) {  // If A is 0, the line is horizontal           
+        return 0.0; 
     }
-    return -a / b;
+    else if (b == 0) // vertical line if b is equal to 0
+    {
+        cout << "Slope is undefined (vertical line)." << endl;
+        return numeric_limits<double>::infinity(); // or some other sentinel value 
+    }
+    return (-a/b);
 }
 
 //  B. Equal
@@ -210,13 +220,20 @@ void listLines(const vector<lineTY*>& lines, bool showSlopes) {
 
 void addLine(vector<lineTY*>& lines) {
     double A, B, C;
-    cout << "\nEnter coefficients for new line (ax + by = c)\n";
-    cout << "a = ";
-    cin >> A;
-    cout << "b = ";
-    cin >> B;
+    do // loop until valid line entered
+    {
+        cout << "\nEnter coefficients for new line (ax + by = c)\n";
+        cout << "a = ";
+        cin >> A;
+        cout << "b = ";
+        cin >> B;
+        if (A == 0.0 && B == 0.0) {
+            cout << "Invalid line: both a and b cannot be zero. Please re-enter.\n";
+        }
+    } while (A == 0.0 && B == 0.0); 
     cout << "c = ";
     cin >> C;
+        
 
     lineTY* ptr = new lineTY(A, B, C);
     lines.push_back(ptr);
