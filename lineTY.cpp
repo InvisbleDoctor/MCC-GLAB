@@ -219,24 +219,25 @@ void listLines(const vector<lineTY*>& lines, bool showSlopes) {
 }
 
 int getLoopChoice() {
-    int choice;
+    // Reads a whole line and validates single token 0 or -1.
+    // Prevents tight loop on bad input (e.g., non-numeric) and handles EOF gracefully.
     while (true) {
-        cin >> choice;
-
-        // bad input: letters, symbols, etc.
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Try again. Invalid input\n";
-            continue; // ask again
+        std::string token;
+        if (!std::getline(cin, token)) {
+            // EOF or stream error -> treat as exit
+            return -1;
         }
-
-        // valid input must be ONLY 0 or -1
-        if (choice == 0 || choice == -1) {
-            return choice;
+        // trim leading/trailing whitespace
+        size_t start = token.find_first_not_of(" \t\r\n");
+        if (start == std::string::npos) {
+            // empty line -> return to menu
+            return -1;
         }
-
-        cout << "Try again. Invalid input\n";
+        size_t end = token.find_last_not_of(" \t\r\n");
+        std::string val = token.substr(start, end - start + 1);
+        if (val == "0") return 0;
+        if (val == "-1") return -1;
+        cout << "Invalid input (enter 0 or -1): ";
     }
 }
 
