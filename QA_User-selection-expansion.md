@@ -1,4 +1,4 @@
-# **QA Report — Branch: `lineTY-Slope-Function-Adjustment`**
+# **QA Report — Branch: `User-Selection-expansion`**
 
 **Scope:**  
 Runtime input/validation and line behavior updates only.  
