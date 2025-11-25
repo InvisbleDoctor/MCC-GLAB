@@ -4,6 +4,7 @@
 
 #include <vector>
 
+
 class lineTY {
 public:
     // Rule of Three
@@ -21,7 +22,7 @@ public:
     // A. slope (if not vertical)
     double slope() const;
 
-    // B–E relationships
+    // Bï¿½E relationships
     bool isEqual(const lineTY& other) const;
     bool isParallel(const lineTY& other) const;
     bool isPerpendicular(const lineTY& other) const;
